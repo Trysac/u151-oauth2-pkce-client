@@ -1,19 +1,16 @@
-# Security notes
+# Security Policy & Threat Model
 
-## Threat model
+## Threat Model
 
-`trysac-oauth2-pkce-client` is a pure library without I/O. The main risks are:
+### Defended
+1. **Authorization Code Interception**: PKCE S256 is enforced by design; 'plain' method is not supported.
+2. **Login CSRF**: State parameter is required and checked in constant time against the initial request.
+3. **Token & Secret Leakage**: `TokenSet`, `OAuthConfig`, and `AuthRequest` mask tokens (`***`) in `__repr__`. Events emitted through `on_event` omit sensitive tokens and codes.
+4. **Insecure Endpoints**: Rejects cleartext HTTP for endpoints unless using RFC 8252 loopback addresses (`127.0.0.1`, `::1`, `localhost`).
+5. **Denial of Service**: Enforces maximum input sizes: 8 KiB for callback queries, 64 KiB for token responses.
 
-- **Supply chain**: a compromised dependency or CI action. Mitigation: no runtime dependencies,
-  Dependabot weekly updates, actions pinned to major versions, minimal workflow permissions.
-- **Leaked secrets**: tokens committed by mistake. Mitigation: `gitleaks` runs in the local gates
-  and in CI; `.env` files are git-ignored.
-- **Untrusted input**: callers may pass hostile strings. Mitigation: validate input and fail with
-  explicit exceptions; never `eval`, `exec` or deserialize untrusted data.
-
-## Publishing
-
-Releases are published to PyPI with trusted publishing (OIDC) when available, never with a
-long-lived token stored in the repository.
-
-To report a vulnerability, see [SECURITY.md](../SECURITY.md).
+### Not Defended
+- **Token Storage**: Security of persistent token storage is the responsibility of the calling application.
+- **Redirect Handling**: The application's local HTTP listener is outside this library's scope.
+- **OIDC Features**: ID token signature verification and OIDC discovery are not implemented.
+- **Advanced Protocols**: RFC 9207 (Issuer identification) and DPoP (Proof-of-possession) are out of scope.

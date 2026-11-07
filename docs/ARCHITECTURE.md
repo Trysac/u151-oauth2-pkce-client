@@ -1,29 +1,31 @@
 # Architecture
 
-## Purpose
+`trysac-oauth2-pkce-client` is a zero-dependency OAuth 2.0 PKCE client implementing the client side of RFC 6749 and RFC 7636.
 
-`trysac-oauth2-pkce-client` is a small, dependency-free Python library: OAuth 2.0 authorization code client with PKCE S256, constant-time state check, bounded token parsing and single-refresh token renewal over an injected transport
+## Architecture Overview
 
-## Shape
-
-```text
-caller code --> oauth2_pkce_client (public API in __init__.py)
-                    |
-                    +-- pure functions, no I/O, no global state
+```
++-----------------------------------------------------------+
+|                    Application Layer                      |
++-----------------------------------------------------------+
+       | start_authorization()            | get_access_token()
+       v                                  v
++-----------------------------------------------------------+
+|                      OAuthClient                          |
+|  - PKCE S256 Generation & Validation                      |
+|  - Constant-time State Check                              |
+|  - Single-flight Thread-safe Token Refresh                |
+|  - Masked Credentials in repr()                           |
++-----------------------------------------------------------+
+       |                                  |
+       v Transport.post_form(...)          v
++-----------------------+      +----------------------------+
+| User-Injected Transport|      | TokenSet (immutable)       |
+| (e.g. urllib / httpx) |      | access_token, expires_at   |
++-----------------------+      +----------------------------+
 ```
 
-- **Public API**: the names listed in `__all__` of `src/oauth2_pkce_client/__init__.py`. Anything else is
-  internal and may change without a major version.
-- **Errors**: invalid input raises built-in exceptions (`ValueError`, `TypeError`) with a clear
-  message; the library never prints or exits.
-- **Side effects**: none. If a feature needs I/O, isolate it in its own module behind a small
-  interface and record the choice in an ADR.
-
-## Quality contract
-
-`scripts/check.py` is the single definition of the gates; `fabrica.json` tells the factory and CI
-how to run it. See [TESTING.md](TESTING.md).
-
-## Decisions
-
-Architecture decisions are recorded in [decisions/](decisions/) as numbered ADRs.
+## Key Design Decisions
+- **Injected Transport Protocol**: Decouples network I/O from protocol validation, preventing dependency conflicts.
+- **Single-Flight Refresh**: Thread lock with expiration re-checks prevents token endpoint stampedes when concurrent workers see an expired token.
+- **Strict Parsing Limits**: Rejects payloads over 64 KiB and callback queries over 8 KiB.
