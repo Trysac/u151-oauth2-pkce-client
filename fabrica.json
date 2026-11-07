@@ -1,0 +1,1 @@
+{"lang": "python", "package": "trysac-oauth2-pkce-client", "commands": {"install": [["uv", "sync"]], "check": [["uv", "run", "python", "scripts/check.py"]]}}

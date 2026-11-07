@@ -1,0 +1,16 @@
+# oauth2-pkce-client
+
+> OAuth 2.0 authorization code client with PKCE S256, constant-time state check, bounded token parsing and single-refresh token renewal over an injected transport Python package `trysac-oauth2-pkce-client`, import name `oauth2_pkce_client`, MIT licensed,
+> Python >= 3.10, no runtime dependencies.
+
+## Docs
+
+- [README](README.md): problem, install, usage example
+- [AGENTS](AGENTS.md): commands, folder map, conventions, limits
+- [Architecture](docs/ARCHITECTURE.md): shape of the package and its public API
+- [Testing](docs/TESTING.md): how to run and extend the tests
+
+## Optional
+
+- [Stack](docs/STACK.md): tools used and discarded
+- [Changelog](CHANGELOG.md): release history
