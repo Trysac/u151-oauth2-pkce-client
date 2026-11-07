@@ -9,4 +9,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Implement RFC 7636 PKCE S256 OAuth 2.0 client with pluggable transport and single-flight refresh.
 - Initial project structure from the factory utility template.
