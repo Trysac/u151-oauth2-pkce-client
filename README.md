@@ -8,8 +8,10 @@ Hand-rolled OAuth 2.0 clients often introduce critical vulnerabilities by skippi
 
 ## Installation
 
+Not published to PyPI yet. Install it from GitHub:
+
 ```bash
-pip install oauth2-pkce-client
+pip install "git+https://github.com/Trysac/u151-oauth2-pkce-client"
 ```
 
 ## Usage Example
